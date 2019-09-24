@@ -60,7 +60,7 @@ impl<'s> System<'s> for LaserSpawnerSystem {
             mut sprite_renderers,
             mut tints,
             sprite_map,
-            entities
+            entities,
         ): Self::SystemData
     ) {
         // Increase the spawn countdown. This should definitely not be linked to

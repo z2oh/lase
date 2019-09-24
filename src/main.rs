@@ -7,7 +7,10 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
-    utils::application_root_dir,
+    utils::{
+        application_root_dir,
+        ortho_camera::CameraOrthoSystem,
+    },
 };
 
 mod systems;
@@ -43,6 +46,11 @@ fn main() -> amethyst::Result<()> {
         )?
         .with_bundle(TransformBundle::new())?
         .with_bundle(input_bundle)?
+        .with(
+            CameraOrthoSystem::default(),
+            "camera_system",
+            &[],
+        )
         .with(
             systems::PlayerSystem,
             "player_system",

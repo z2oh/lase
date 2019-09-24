@@ -18,6 +18,7 @@ use amethyst::{
         SpriteSheetFormat,
         Texture,
     },
+    utils::ortho_camera::{CameraNormalizeMode, CameraOrtho, CameraOrthoWorldCoordinates},
     window::{ScreenDimensions},
 };
 use std::collections::HashMap;
@@ -30,10 +31,10 @@ impl SimpleState for Dodge {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         // Initialize global resources.
         let sprite_map = load_sprite_map(data.world);
-        data.world.add_resource(sprite_map);
+        data.world.insert(sprite_map);
 
         let time_scale = TimeScale::default();
-        data.world.add_resource(time_scale);
+        data.world.insert(time_scale);
 
         // Initialize singleton entities.
         initialize_player(data.world);
@@ -199,8 +200,29 @@ fn initialize_camera(world: &mut World) {
     // Create the camera entity.
     world
         .create_entity()
-        // TODO: evaluate these parameters.
+        // Upscale rendering by 4x.
         .with(Camera::standard_2d(width / 4.0, height / 4.0))
+        // The CameraOrtho component will ensure that the world coordinates
+        // specified by the CameraOrthoWorldCoordinates will remain visible
+        // through window resizes. If the aspect ratio of the window does not
+        // match the aspect ratio of our visible world coordinates, we render
+        // additional world space. This means that in extreme situations (i.e.
+        // crazy window aspect ratio), we may render parts of the world very
+        // very far away from the player.
+        //
+        // To make this more robust, we probably want to place some restrictions
+        // on the resizability of the window, or possibly introduce some kind of
+        // letterboxing.
+        .with(CameraOrtho::new(
+            CameraNormalizeMode::Contain,
+            // Upscale rendering by 4x.
+            CameraOrthoWorldCoordinates {
+                left: -width * 0.5 / 4.0,
+                right: width * 0.5 / 4.0,
+                bottom: -height * 0.5 / 4.0,
+                top: height * 0.5 / 4.0,
+            }
+        ))
         .with(transform)
         .build();
 }
