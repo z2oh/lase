@@ -3,7 +3,7 @@ use amethyst::{
     input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
-        plugins::{RenderFlat2D, RenderFlat3D, RenderToWindow},
+        plugins::{RenderDebugLines, RenderFlat2D, RenderToWindow},
         types::DefaultBackend,
         RenderingBundle,
     },
@@ -17,13 +17,14 @@ mod dodge;
 use crate::dodge::Dodge;
 
 fn main() -> amethyst::Result<()> {
+    // For now we log everything.
     amethyst::start_logger(Default::default());
 
     let app_root = application_root_dir()?;
 
+    // Configuration files.
     let config_dir = app_root.join("config");
     let display_config_path = config_dir.join("display.ron");
-
     let binding_path = app_root.join("config").join("bindings.ron");
 
     let input_bundle = InputBundle::<StringBindings>::new()
@@ -34,16 +35,35 @@ fn main() -> amethyst::Result<()> {
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
                     RenderToWindow::from_config_path(display_config_path)
+                        // Clear to black.
                         .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
                 .with_plugin(RenderFlat2D::default())
-                .with_plugin(RenderFlat3D::default()),
+                .with_plugin(RenderDebugLines::default()),
         )?
         .with_bundle(TransformBundle::new())?
         .with_bundle(input_bundle)?
-        .with(systems::PlayerSystem, "player_system", &["input_system"])
-        .with(systems::LaserSpawnerSystem::default(), "laser_system", &["player_system"])
-        .with(systems::RelativeMotionSystem, "relative_motion_system", &["player_system", "laser_system"]);
+        .with(
+            systems::PlayerSystem,
+            "player_system",
+            &["input_system"]
+        )
+        .with(
+            systems::LaserSpawnerSystem::default(),
+            "laser_system",
+            &["player_system"]
+        )
+        .with(
+            systems::RelativeMotionSystem,
+            "relative_motion_system",
+            &["player_system", "laser_system"]
+        )
+        .with(
+            systems::LaserCollisionSystem,
+            "laser_collision_system",
+            // We want to check for collisions after everything has moved.
+            &["relative_motion_system"]
+        );
 
     let assets_dir = app_root.join("assets");
     let mut game = Application::new(assets_dir, Dodge::default(), game_data)?;

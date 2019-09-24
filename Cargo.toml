@@ -1,6 +1,6 @@
 [package]
-name = "untitled_laser_project"
-version = "0.1.0"
+name = "lase"
+version = "0.2.0"
 authors = [ "Jeremy Day <jadaytime@gmail.com>" ]
 edition = "2018"
 
