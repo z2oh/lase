@@ -10,7 +10,8 @@ use amethyst::core::{Time, Transform};
 use amethyst::ecs::{Join, Read, ReadStorage, System, Write, WriteStorage};
 use amethyst::input::{InputHandler, StringBindings};
 
-use crate::dodge::{Player, TimeScale, Velocity};
+use crate::dodge::{Player, Velocity};
+use crate::resources::TimeScale;
 use crate::util::{clamp, normalize};
 
 pub struct PlayerSystem;

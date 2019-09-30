@@ -6,7 +6,7 @@
 //! usefulness.
 
 use amethyst::{
-    assets::{AssetStorage, Loader, Handle},
+    assets::{AssetStorage, Loader},
     core::transform::Transform,
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
@@ -21,7 +21,8 @@ use amethyst::{
     utils::ortho_camera::{CameraNormalizeMode, CameraOrtho, CameraOrthoWorldCoordinates},
     window::{ScreenDimensions},
 };
-use std::collections::HashMap;
+
+use crate::resources::{SpriteMap, TimeScale};
 
 /// The main gameplay state.
 #[derive(Default)]
@@ -42,47 +43,7 @@ impl SimpleState for Dodge {
     }
 }
 
-// TODO: Factor these structs into their own module(s).
-
-//
-// Resources.
-//
-
-/// Holds a hash map mapping string ids to a sprite sheet handle. This allows
-/// easy look up of sprites in systems.
-// TODO: Make this type checked by having some kind of enum system for hardcoded
-// texture ids?
-// TODO: Generalize this to work with generic asset types.
-#[derive(Default)]
-pub struct SpriteMap(HashMap<String, Handle<SpriteSheet>>);
-// TODO: Evaluate this public API.
-impl SpriteMap {
-    /// Inserts a new handle with its string id into the map.
-    #[allow(dead_code)]
-    pub fn insert(
-        &mut self,
-        k: String,
-        v: Handle<SpriteSheet>
-    ) -> Option<Handle<SpriteSheet>> {
-        self.0.insert(k, v)
-    }
-
-    /// Gets the handle to the sprite sheet. Since `Handle` clones are cheap, we
-    /// clone here so that the caller doesn't have to.
-    pub fn get(&self, k: &str) -> Option<Handle<SpriteSheet>> {
-        self.0.get(k).map(Clone::clone)
-    }
-}
-
-/// Wrapper around a float that controls how fast time within the game is
-/// moving. This is a multiplicative factor.
-pub struct TimeScale(pub f32);
-impl Default for TimeScale {
-    /// The default timescale is 1.0, so time will move at the standard speed.
-    fn default() -> Self {
-        Self(1.0)
-    }
-}
+// TODO: Factor these components into their own module(s).
 
 //
 // Components.
@@ -261,10 +222,10 @@ fn load_sprite_map(world: &mut World) -> SpriteMap {
         &sprite_sheet_storage,
     );
 
-    SpriteMap([
+    [
         // TODO: Make this type checked by having some kind of enum system for
         // hardcoded texture ids?
-        ("laser_sprite".to_string(), laser_sprite_sheet_handle),
-        ("player".to_string(), sprites_sprite_sheet_handle),
-    ].iter().cloned().collect())
+        ("laser_sprite", laser_sprite_sheet_handle),
+        ("player", sprites_sprite_sheet_handle),
+    ].iter().cloned().collect()
 }

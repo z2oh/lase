@@ -13,9 +13,10 @@ use amethyst::{
     },
 };
 
+mod dodge;
+mod resources;
 mod systems;
 mod util;
-mod dodge;
 
 use crate::dodge::Dodge;
 

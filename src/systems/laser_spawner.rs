@@ -13,7 +13,8 @@ use amethyst::renderer::SpriteRender;
 
 use rand;
 
-use crate::dodge::{Laser, Player, SpriteMap, Velocity};
+use crate::dodge::{Laser, Player, Velocity};
+use crate::resources::SpriteMap;
 use crate::util::{normalize, scale};
 
 ///
