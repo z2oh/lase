@@ -29,6 +29,7 @@ fn main() -> amethyst::Result<()> {
     // Configuration files.
     let config_dir = app_root.join("config");
     let display_config_path = config_dir.join("display.ron");
+    let laser_spawner_config_path = config_dir.join("laser_spawner.ron");
     let binding_path = app_root.join("config").join("bindings.ron");
 
     let input_bundle = InputBundle::<StringBindings>::new()
@@ -58,7 +59,11 @@ fn main() -> amethyst::Result<()> {
             &["input_system"]
         )
         .with(
-            systems::LaserSpawnerSystem::default(),
+            // Explicit panic if an error is encountered while reading the
+            // config file.
+            systems::LaserSpawnerSystem::from_config_path(
+                laser_spawner_config_path,
+            ).unwrap(),
             "laser_system",
             &["player_system"]
         )

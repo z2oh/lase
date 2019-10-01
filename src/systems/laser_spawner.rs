@@ -4,8 +4,10 @@
 //!
 //! In some cases, debugging values are used, and thus this code is not
 //! independent of the environment in which it is typically run.
+use std::path::Path;
 
 use amethyst::core::Transform;
+use amethyst::config::{Config, ConfigError};
 use amethyst::ecs::{Entities, Join, Read, ReadStorage, System, WriteStorage};
 use amethyst::renderer::palette::Srgb;
 use amethyst::renderer::resources::Tint;
@@ -13,24 +15,40 @@ use amethyst::renderer::SpriteRender;
 
 use rand;
 
+use serde::{Deserialize, Serialize};
+
 use crate::dodge::{Laser, Player, Velocity};
 use crate::resources::SpriteMap;
 use crate::util::{normalize, scale};
 
-///
-pub struct LaserSpawnerSystem {
-    counter: u32,
+// TODO: hopefully remove the `Default` derivation pending this issue:
+// https://github.com/amethyst/amethyst/issues/1954
+#[derive(Default, Deserialize, Serialize)]
+pub struct LaserSpawnerConfig {
     spawn_rate: u32,
 }
 
-impl Default for LaserSpawnerSystem {
-    fn default() -> Self {
+pub struct LaserSpawnerSystem {
+    counter: u32,
+    config: LaserSpawnerConfig,
+}
+
+impl LaserSpawnerSystem {
+    /// Builds a `LaserSpawnerSystem` with the provided `LaserSpawnerConfig`.
+    pub fn from_config(config: impl Into<LaserSpawnerConfig>) -> Self {
         Self {
             counter: 0,
-            // TODO: This should be controlled by a configuration file for easy
-            // tweaking during development.
-            spawn_rate: 3,
+            config: config.into(),
         }
+    }
+
+    /// Builds a `LaserSpawnerSystem` by reading the RON file at `path`.
+    pub fn from_config_path(
+        path: impl AsRef<Path>
+    ) -> Result<Self, ConfigError> {
+        // TODO: hopefully change this to just call load pending this issue:
+        // https://github.com/amethyst/amethyst/issues/1954
+        LaserSpawnerConfig::load_no_fallback(path).map(Self::from_config)
     }
 }
 
@@ -67,7 +85,7 @@ impl<'s> System<'s> for LaserSpawnerSystem {
         // Increase the spawn countdown. This should definitely not be linked to
         // the update rate ans should be tied to wall time.
         self.counter += 1;
-        if self.counter > self.spawn_rate {
+        if self.counter > self.config.spawn_rate {
             // Get the player's transform.
             // TODO: is this idiomatic?
             let player_transform = (&players, &transforms)
