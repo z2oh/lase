@@ -4,11 +4,11 @@
 //! the specialized gameplay code in this module will be grouped and factored
 //! into other compilation units, once it has demonstrated its sustained
 //! usefulness.
+use std::path::{Path, PathBuf};
 
 use amethyst::{
     assets::{AssetStorage, Loader},
     core::transform::Transform,
-    ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
     renderer::{
         Camera,
@@ -23,10 +23,20 @@ use amethyst::{
 };
 
 use crate::resources::{SpriteMap, TimeScale};
+use crate::components::{BoundingBox, Player, Velocity};
 
 /// The main gameplay state.
-#[derive(Default)]
-pub struct Dodge;
+pub struct Dodge {
+    config_path: PathBuf,
+}
+
+impl Dodge {
+    pub fn with_config_path(config_path: PathBuf) -> Self {
+        Self {
+            config_path
+        }
+    }
+}
 
 impl SimpleState for Dodge {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
@@ -38,76 +48,13 @@ impl SimpleState for Dodge {
         data.world.insert(time_scale);
 
         // Initialize singleton entities.
-        initialize_player(data.world);
+        initialize_player(data.world, self.config_path.join("player.ron"));
         initialize_camera(data.world);
     }
 }
 
-// TODO: Factor these components into their own module(s).
-
-//
-// Components.
-//
-
-/// This component holds properties about a laser.
-pub struct Laser {
-    // TODO: is this idiomatic? I should probably be using amethyst's color
-    // types.
-    pub color: (f32, f32, f32)
-}
-
-impl Default for Laser {
-    fn default() -> Self {
-        Self {
-            color: (0.0, 0.0, 0.0),
-        }
-    }
-}
-
-impl Component for Laser {
-    // TODO: investigate storage types. This component in particular should
-    // probably use `VecStorage`.
-    type Storage = DenseVecStorage<Self>;
-}
-
-/// This component holds properties about a player. The current fields of this
-/// struct will probably be factored into components of their own.
-// TODO: is this idiomatic for singleton entities like the player?
-pub struct Player {
-    pub terminal_velocity_x: f32,
-    pub terminal_velocity_y: f32,
-    pub acceleration: f32,
-}
-
-impl Component for Player {
-    // TODO: investigate storage types.
-    type Storage = DenseVecStorage<Self>;
-}
-
-/// This component holds velocity information about an entity in the form of a
-/// two dimensional vector. This information encodes both speed and direction.
-pub struct Velocity(pub f32, pub f32);
-
-impl Component for Velocity {
-    // TODO: investigate storage types. This component in particular should
-    // probably use `VecStorage`.
-    type Storage = DenseVecStorage<Self>;
-}
-
-/// This is the width and height of the bounding box. We only permit this
-/// component to be added to an entity with a transform, so that the box has a
-/// position.
-// TODO: group this in some sort of "collidable" component?
-// TODO: is this idiomatic?
-pub struct BoundingBox(pub f32, pub f32);
-
-impl Component for BoundingBox {
-    // TODO: investigate storage types.
-    type Storage = DenseVecStorage<Self>;
-}
-
 /// Static function to initialize a player in a world.
-fn initialize_player(world: &mut World) {
+fn initialize_player(world: &mut World, config_path: impl AsRef<Path>) {
     // TODO: the screen dimensions should be abstracted from the world's
     // coordinates.
     let (width, height) = {
@@ -137,11 +84,9 @@ fn initialize_player(world: &mut World) {
         .with(sprite_render)
         .with(local_transform)
         .with(Velocity(0.0, 0.0))
-        .with(Player {
-            terminal_velocity_x: 100.0,
-            terminal_velocity_y: 100.0,
-            acceleration: 200.0,
-        })
+        // Explicit panic if an error is encountered while reading the config
+        // file.
+        .with(Player::from_config_path(config_path).unwrap())
         .with(BoundingBox(8.0, 8.0))
         .build();
 }

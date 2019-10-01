@@ -17,7 +17,7 @@ use rand;
 
 use serde::{Deserialize, Serialize};
 
-use crate::dodge::{Laser, Player, Velocity};
+use crate::components::{Laser, Player, Velocity};
 use crate::resources::SpriteMap;
 use crate::util::{normalize, scale};
 

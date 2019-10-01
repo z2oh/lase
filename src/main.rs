@@ -13,6 +13,7 @@ use amethyst::{
     },
 };
 
+mod components;
 mod dodge;
 mod resources;
 mod systems;
@@ -80,7 +81,11 @@ fn main() -> amethyst::Result<()> {
         );
 
     let assets_dir = app_root.join("assets");
-    let mut game = Application::new(assets_dir, Dodge::default(), game_data)?;
+    let mut game = Application::new(
+        assets_dir,
+        Dodge::with_config_path(config_dir),
+        game_data,
+    )?;
     game.run();
 
     Ok(())

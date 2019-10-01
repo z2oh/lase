@@ -9,7 +9,7 @@ use amethyst::{
     ecs::prelude::{Join, Read, ReadStorage, System, WriteStorage},
 };
 
-use crate::dodge::Velocity;
+use crate::components::Velocity;
 use crate::resources::TimeScale;
 
 pub struct RelativeMotionSystem;

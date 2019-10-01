@@ -14,7 +14,7 @@
 use amethyst::core::Transform;
 use amethyst::ecs::{Entities, Join, ReadStorage, System,};
 
-use crate::dodge::{BoundingBox, Laser, Player};
+use crate::components::{BoundingBox, Laser, Player};
 use crate::util::line_intersects_rect;
 
 pub struct LaserCollisionSystem;
