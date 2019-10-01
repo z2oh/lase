@@ -1,13 +1,11 @@
 [package]
 name = "lase"
-version = "0.2.0"
+version = "0.3.0"
 authors = [ "Jeremy Day <jadaytime@gmail.com>" ]
 edition = "2018"
 
 [dependencies]
-# TODO: reenable dependency on released amethyst version when d5174a856483f8c0efe720b47e636199578690bd lands.
-# amethyst = "0.12.0"
-amethyst = { git = "https://github.com/amethyst/amethyst", rev = "d5174a856483f8c0efe720b47e636199578690bd" }
+amethyst = "0.13.0"
 rand = "0.7"
 serde = "1.0"
 
