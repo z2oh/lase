@@ -29,9 +29,10 @@ fn main() -> amethyst::Result<()> {
 
     // Configuration files.
     let config_dir = app_root.join("config");
+    let binding_path = config_dir.join("bindings.ron");
     let display_config_path = config_dir.join("display.ron");
     let laser_spawner_config_path = config_dir.join("laser_spawner.ron");
-    let binding_path = app_root.join("config").join("bindings.ron");
+    let time_scaling_config_path = config_dir.join("time_scaling.ron");
 
     let input_bundle = InputBundle::<StringBindings>::new()
         .with_bindings_from_file(binding_path)?;
@@ -78,6 +79,13 @@ fn main() -> amethyst::Result<()> {
             "laser_collision_system",
             // We want to check for collisions after everything has moved.
             &["relative_motion_system"]
+        )
+        .with(
+            systems::TimeScalingSystem::from_config_path(
+                time_scaling_config_path,
+            ).unwrap(),
+            "time_scaling_system",
+            &["input_system"]
         );
 
     let assets_dir = app_root.join("assets");

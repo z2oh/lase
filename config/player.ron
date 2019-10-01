@@ -1,6 +1,6 @@
 (
-    terminal_velocity_x: 100.0,
-    terminal_velocity_y: 100.0,
-    acceleration: 200.0,
-    deceleration: 3.0,
+    terminal_velocity_x: 150.0,
+    terminal_velocity_y: 150.0,
+    acceleration: 1000.0,
+    deceleration: 5.0,
 )

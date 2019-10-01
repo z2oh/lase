@@ -1,17 +1,11 @@
-//! This module holds, among other things, the glue between the input system its
-//! intended action upon the game state. The player's position is updated in
-//! response to input via a (very) rudimentary twice differentiable physics
-//! model.
-//!
-//! The time scale of the world is set to a clamped value based on the magnitude
-//! of the player's current velocity.
+//! This module updates the player's position response to input via a (very)
+//! rudimentary twice differentiable physics model.
 
 use amethyst::core::{Time, Transform};
-use amethyst::ecs::{Join, Read, ReadStorage, System, Write, WriteStorage};
+use amethyst::ecs::{Join, Read, ReadStorage, System, WriteStorage};
 use amethyst::input::{InputHandler, StringBindings};
 
 use crate::components::{Player, Velocity};
-use crate::resources::TimeScale;
 use crate::util::{clamp, normalize};
 
 pub struct PlayerSystem;
@@ -25,7 +19,6 @@ impl<'s> System<'s> for PlayerSystem {
         WriteStorage<'s, Transform>,
         WriteStorage<'s, Velocity>,
         Read<'s, InputHandler<StringBindings>>,
-        Write<'s, TimeScale>,
         Read<'s, Time>,
     );
 
@@ -36,7 +29,6 @@ impl<'s> System<'s> for PlayerSystem {
             mut transforms,
             mut velocities,
             input,
-            mut time_scale,
             time
         ): Self::SystemData
     ) {
@@ -84,15 +76,6 @@ impl<'s> System<'s> for PlayerSystem {
             // Set the velocity to our calculated values.
             velocity.0 = v_x;
             velocity.1 = v_y;
-
-            // Determine how fast the player is going.
-            let mag = (v_x * v_x + v_y * v_y).sqrt();
-            // Set the time scale to be the percentage of the player speed to
-            // their max speed, clamped between 0.2 and 1.0.
-            // N.B. the 66.0 literal here was observed to be approximately the
-            // player's max speed in testing. This will have to be more
-            // sophisticated in the near future.
-            time_scale.0 = (0.2_f32).max(mag / 66.0).min(1.0);
 
             // Rotate the player's sprite to look left or right once the
             // player's x-velocity passes some threshold of speed in the other

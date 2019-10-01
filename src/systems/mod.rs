@@ -11,3 +11,6 @@ pub use laser_spawner::LaserSpawnerSystem;
 
 mod laser_collision;
 pub use laser_collision::LaserCollisionSystem;
+
+mod time_scaling;
+pub use time_scaling::TimeScalingSystem;
