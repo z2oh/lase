@@ -86,6 +86,11 @@ fn main() -> amethyst::Result<()> {
             ).unwrap(),
             "time_scaling_system",
             &["input_system"]
+        )
+        .with(
+            systems::DebugSystem::default(),
+            "debug_system",
+            &[],
         );
 
     let assets_dir = app_root.join("assets");
