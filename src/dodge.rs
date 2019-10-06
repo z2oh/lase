@@ -88,7 +88,7 @@ fn initialize_player(world: &mut World, config_path: impl AsRef<Path>) {
         // Explicit panic if an error is encountered while reading the config
         // file.
         .with(Player::from_config_path(config_path).unwrap())
-        .with(BoundingBox(8.0, 8.0))
+        .with(BoundingBox::from(Vec2::new(4.0, 4.0)))
         .build();
 }
 

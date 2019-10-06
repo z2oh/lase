@@ -13,6 +13,7 @@ use amethyst::{
     },
 };
 
+mod collisions;
 mod components;
 mod dodge;
 mod resources;
@@ -32,6 +33,7 @@ fn main() -> amethyst::Result<()> {
     let config_dir = app_root.join("config");
     let binding_path = config_dir.join("bindings.ron");
     let display_config_path = config_dir.join("display.ron");
+    let laser_collision_config_path = config_dir.join("laser_collision.ron");
     let laser_spawner_config_path = config_dir.join("laser_spawner.ron");
     let time_scaling_config_path = config_dir.join("time_scaling.ron");
 
@@ -76,7 +78,11 @@ fn main() -> amethyst::Result<()> {
             &["player_system", "laser_system"]
         )
         .with(
-            systems::LaserCollisionSystem,
+            // Explicit panic if an error is encountered while reading the
+            // config file.
+            systems::LaserCollisionSystem::from_config_path(
+                laser_collision_config_path,
+            ).unwrap(),
             "laser_collision_system",
             // We want to check for collisions after everything has moved.
             &["relative_motion_system"]

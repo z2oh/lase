@@ -24,6 +24,7 @@ use crate::vector::prelude::*;
 #[derive(Default, Deserialize, Serialize)]
 pub struct LaserSpawnerConfig {
     spawn_rate: u32,
+    spawn_dist: StorageTy,
 }
 
 pub struct LaserSpawnerSystem {
@@ -94,7 +95,7 @@ impl<'s> System<'s> for LaserSpawnerSystem {
 
             // The desired spawn distance from the player.
             // TODO: make this configurable.
-            let player_dist = 1500.0;
+            let player_dist = 250.0;
 
             // Pick a random rotation.
             let rand_theta = rand::random::<StorageTy>() * PI * 2.0;
@@ -149,6 +150,8 @@ impl<'s> System<'s> for LaserSpawnerSystem {
             let laser_color = (rand::random(), rand::random(), rand::random());
             let laser = Laser {
                 color: laser_color,
+                // TODO: don't hardcode this.
+                len: 32.0,
             };
 
             // Point the laser at the player and fire at a reasonable velocity.

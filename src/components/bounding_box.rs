@@ -1,11 +1,16 @@
-//! This component holds the width and height of a bounding box. This component
-//! is expected to be added to an entity with a transform, to give the box an
-//! implicit position.
+//! This component wraps a `crate::collisions::Rect` object
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
 
-// TODO: group this in some sort of "collidable" component?
-// TODO: is this idiomatic?
-pub struct BoundingBox(pub f32, pub f32);
+pub use crate::collisions::BoundingBox;
+
+use crate::vector::StorageTy;
+
+impl BoundingBox {
+    /// This function returns the max distance to a corner of the box.
+    pub fn dist(self) -> StorageTy {
+        self.0.norm()
+    }
+}
 
 impl Component for BoundingBox {
     // TODO: investigate storage types.
