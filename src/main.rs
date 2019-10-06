@@ -15,13 +15,13 @@ use amethyst::{
 
 mod collisions;
 mod components;
-mod dodge;
+mod lase;
 mod resources;
 mod systems;
 mod util;
 mod vector;
 
-use crate::dodge::Dodge;
+use crate::lase::Lase;
 
 fn main() -> amethyst::Result<()> {
     // For now we log everything.
@@ -103,7 +103,7 @@ fn main() -> amethyst::Result<()> {
     let assets_dir = app_root.join("assets");
     let mut game = Application::new(
         assets_dir,
-        Dodge::with_config_path(config_dir),
+        Lase::with_config_path(config_dir),
         game_data,
     )?;
     game.run();

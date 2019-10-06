@@ -27,11 +27,11 @@ use crate::components::{BoundingBox, Player, RelativeLocomotor};
 use crate::vector::prelude::*;
 
 /// The main gameplay state.
-pub struct Dodge {
+pub struct Lase {
     config_path: PathBuf,
 }
 
-impl Dodge {
+impl Lase {
     pub fn with_config_path(config_path: PathBuf) -> Self {
         Self {
             config_path
@@ -39,7 +39,7 @@ impl Dodge {
     }
 }
 
-impl SimpleState for Dodge {
+impl SimpleState for Lase {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         // Initialize global resources.
         let sprite_map = load_sprite_map(data.world);
