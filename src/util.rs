@@ -1,61 +1,14 @@
 //! This module holds a small number of utility functions, mostly for
-//! manipulating vectors. This should be considered an "unstable" module;
+//! manipulating numbers. This should be considered an "unstable" module;
 //! functions here are very likely to be factored out once the scope of their
 //! potential use is better understood.
 
-// TODO: standardize vec2 format. Amethyst _probably_ has something for this
-// already, given vec2's ubiquity.
+pub mod prelude {
+    use rand;
+    pub use rand::random;
 
-/// Normalize a `vec2` as an array of two `f32`s.
-#[allow(dead_code)]
-pub fn normalize(v: [f32; 2]) -> [f32; 2] {
-    let x = v[0];
-    let y = v[1];
-    let magnitude = (x*x + y*y).sqrt();
-    if magnitude == 0.0 {
-        [x, y]
-    } else {
-        [x / magnitude, y / magnitude]
-    }
-}
-
-/// Multiply a `vec2` as an array of two `f32`s by a scalar.
-#[allow(dead_code)]
-pub fn scale(v: [f32; 2], s: f32) -> [f32; 2] {
-    [v[0] * s, v[1] * s]
-}
-
-/// Clamp a `f32` point value between two values.
-// TODO: is this idiomatic?
-#[allow(dead_code)]
-pub fn clamp(v: f32, min: f32, max: f32) -> f32 {
-    if v > max {
-        max
-    } else if v < min {
-        min
-    } else {
-        v
-    }
-}
-
-/// Returns an `f32` indicating the sign of an input `f32`.
-///
-/// # Examples
-///
-/// ```
-/// assert_eq!(sign(-4.2), -1.0)
-/// assert_eq!(sign(4.2),   1.0)
-/// assert_eq!(sign(0.0),   0.0)
-/// ```
-#[allow(dead_code)]
-pub fn sign(v: f32) -> f32 {
-    if v < 0.0 {
-        -1.0
-    } else if v > 0.0 {
-        1.0
-    } else {
-        0.0
-    }
+    use nalgebra;
+    pub use nalgebra::clamp;
 }
 
 // TODO: factor into collision detection module.

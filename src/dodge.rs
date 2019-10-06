@@ -23,7 +23,8 @@ use amethyst::{
 };
 
 use crate::resources::{SpriteMap, TimeScale};
-use crate::components::{BoundingBox, Player, Velocity};
+use crate::components::{BoundingBox, Player, RelativeLocomotor};
+use crate::vector::prelude::*;
 
 /// The main gameplay state.
 pub struct Dodge {
@@ -76,14 +77,14 @@ fn initialize_player(world: &mut World, config_path: impl AsRef<Path>) {
     };
 
     // Set the player's position to the middle of the world.
-    let mut local_transform = Transform::default();
-    local_transform.set_translation_xyz(width * 0.5, height * 0.5, 0.0);
+    let player_origin = Point2::new(width * 0.5, height * 0.5);
+    let local_transform = Transform::from(add_dim(player_origin.coords));
 
     // Create the player entity with lots of hard coded values.
     world.create_entity()
         .with(sprite_render)
         .with(local_transform)
-        .with(Velocity(0.0, 0.0))
+        .with(RelativeLocomotor::with_pos(player_origin))
         // Explicit panic if an error is encountered while reading the config
         // file.
         .with(Player::from_config_path(config_path).unwrap())
@@ -100,14 +101,14 @@ fn initialize_camera(world: &mut World) {
         (dim.width(), dim.height())
     };
 
-    let mut transform = Transform::default();
-    transform.set_translation_xyz(width * 0.5, height * 0.5, 1.0);
+    let transform = Transform::from(Vec3::new(width * 0.5, height * 0.5, 10.0));
 
     // Create the camera entity.
     world
         .create_entity()
+        .with(transform)
         // Upscale rendering by 4x.
-        .with(Camera::standard_2d(width / 4.0, height / 4.0))
+        .with(Camera::standard_2d(width * 0.5 / 4.0, height * 0.5 / 4.0))
         // The CameraOrtho component will ensure that the world coordinates
         // specified by the CameraOrthoWorldCoordinates will remain visible
         // through window resizes. If the aspect ratio of the window does not
@@ -129,7 +130,6 @@ fn initialize_camera(world: &mut World) {
                 top: height * 0.5 / 4.0,
             }
         ))
-        .with(transform)
         .build();
 }
 

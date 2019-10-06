@@ -7,5 +7,5 @@ pub use player::Player;
 mod laser;
 pub use laser::Laser;
 
-mod velocity;
-pub use velocity::Velocity;
+mod relative_locomotor;
+pub use relative_locomotor::RelativeLocomotor;

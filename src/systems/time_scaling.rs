@@ -13,7 +13,7 @@ use amethyst::input::{InputHandler, StringBindings};
 use serde::{Deserialize, Serialize};
 
 use crate::resources::TimeScale;
-use crate::util::clamp;
+use crate::util::prelude::*;
 
 // TODO: hopefully remove the `Default` derivation pending this issue:
 // https://github.com/amethyst/amethyst/issues/1954

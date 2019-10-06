@@ -18,6 +18,7 @@ mod dodge;
 mod resources;
 mod systems;
 mod util;
+mod vector;
 
 use crate::dodge::Dodge;
 

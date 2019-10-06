@@ -6,10 +6,10 @@
 use amethyst::{
     core::timing::Time,
     core::transform::Transform,
-    ecs::prelude::{Join, Read, ReadStorage, System, WriteStorage},
+    ecs::prelude::{Join, Read, System, WriteStorage},
 };
 
-use crate::components::Velocity;
+use crate::components::RelativeLocomotor;
 use crate::resources::TimeScale;
 
 pub struct RelativeMotionSystem;
@@ -18,7 +18,7 @@ impl<'s> System<'s> for RelativeMotionSystem {
     // TODO: is this idiomatic? Can I package these in some more convenient
     // structure?
     type SystemData = (
-        ReadStorage<'s, Velocity>,
+        WriteStorage<'s, RelativeLocomotor>,
         WriteStorage<'s, Transform>,
         Read<'s, TimeScale>,
         Read<'s, Time>,
@@ -29,18 +29,29 @@ impl<'s> System<'s> for RelativeMotionSystem {
         // TODO: is this idiomatic? Can I package these in some more convenient
         // structure?
         (
-            velocities,
+            mut locomotors,
             mut transforms,
             time_scale,
             time
         ): Self::SystemData
     ) {
-        for (velocity, transform) in (&velocities, &mut transforms).join() {
+        let entity_iter = (&mut locomotors, &mut transforms).join();
+        for (locomotor, transform) in entity_iter {
             // We simply multiply the current time scale by the amount of time
             // that passed.
             let scaled_time = time_scale.0 * time.delta_seconds();
-            transform.prepend_translation_x(velocity.0 * scaled_time);
-            transform.prepend_translation_y(velocity.1 * scaled_time);
+
+            // We calculate the entity's new position, scaling by the time that
+            // passed.
+            let new_pos = locomotor.pos + (locomotor.velocity * scaled_time);
+
+            // We update the entity's transform.
+            transform.set_translation(new_pos.into());
+
+            // Now we update the `old_pos` and `pos` fields on the relative
+            // locomotor.
+            locomotor.old_pos = locomotor.pos;
+            locomotor.pos = new_pos;
         }
     }
 }

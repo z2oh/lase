@@ -1473,9 +1473,10 @@ dependencies = [
 
 [[package]]
 name = "lase"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "amethyst 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.100 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

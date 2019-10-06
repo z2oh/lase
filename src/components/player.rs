@@ -12,8 +12,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Default, Deserialize, Serialize)]
 pub struct PlayerConfig {
-    pub terminal_velocity_x: f32,
-    pub terminal_velocity_y: f32,
+    pub max_speed: f32,
     pub acceleration: f32,
     pub deceleration: f32,
 }
